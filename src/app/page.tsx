@@ -1,23 +1,33 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { VideoPlayer, VideoPlayerRef } from '@/components/VideoPlayer';
 import { Navigation } from '@/components/Navigation';
-import { mockVideos, Video } from '@/data/videos';
+import { mockVideos, Video, Vote } from '@/data/videos';
 
 export default function Home() {
   const [videos, setVideos] = useState<Video[]>(mockVideos);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const videoRefs = useRef<(VideoPlayerRef | null)[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleLike = (videoId: string) => {
-    setVideos(prevVideos => 
-      prevVideos.map(video => 
-        video.id === videoId 
-          ? { ...video, isLiked: !video.isLiked }
-          : video
-      )
+  const handleVote = (videoId: string, dir: 'up' | 'down') => {
+    setVideos(prev =>
+      prev.map(v => {
+        if (v.id !== videoId) return v;
+        let score = v.score;
+        let next: Vote = dir;
+        if (v.userVote === dir) {
+          // Bấm lại nút đang chọn → bỏ vote
+          score += dir === 'up' ? -1 : 1;
+          next = null;
+        } else if (v.userVote === null) {
+          score += dir === 'up' ? 1 : -1;
+        } else {
+          // Đổi chiều vote (up ↔ down) → ±2
+          score += dir === 'up' ? 2 : -2;
+        }
+        return { ...v, score, userVote: next };
+      })
     );
   };
 
@@ -25,65 +35,44 @@ export default function Home() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const videoIndex = parseInt(entry.target.getAttribute('data-index') || '0');
-          const videoRef = videoRefs.current[videoIndex];
-          
+          const idx = parseInt(entry.target.getAttribute('data-index') || '0');
+          const ref = videoRefs.current[idx];
           if (entry.isIntersecting) {
-            setCurrentVideoIndex(videoIndex);
-            videoRef?.play();
+            setCurrentVideoIndex(idx);
+            ref?.play();
           } else {
-            videoRef?.pause();
+            ref?.pause();
           }
         });
       },
-      {
-        threshold: 0.8,
-      }
+      { threshold: 0.6 }
     );
 
-    const videoElements = containerRef.current?.querySelectorAll('.video-container');
-    videoElements?.forEach((element) => observer.observe(element));
-
-    return () => {
-      videoElements?.forEach((element) => observer.unobserve(element));
-    };
+    const els = document.querySelectorAll('.feed-item');
+    els.forEach((el) => observer.observe(el));
+    return () => els.forEach((el) => observer.unobserve(el));
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-black">
+    <div className="app">
       <Navigation />
-      
-      {/* Main Content */}
-      <div className="md:ml-64 pb-16 md:pb-0">
-        <div 
-          ref={containerRef}
-          className="h-screen overflow-y-auto snap-y snap-mandatory"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          <style jsx>{`
-            div::-webkit-scrollbar {
-              display: none;
-            }
-          `}</style>
-          
+
+      <main className="main">
+        <div className="feed">
           {videos.map((video, index) => (
-            <div
-              key={video.id}
-              data-index={index}
-              className="video-container snap-start"
-            >
+            <div key={video.id} data-index={index} className="feed-item">
               <VideoPlayer
                 ref={(ref) => {
                   videoRefs.current[index] = ref;
                 }}
                 video={video}
                 isVisible={index === currentVideoIndex}
-                onLike={handleLike}
+                onVote={handleVote}
               />
             </div>
           ))}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
