@@ -13,4 +13,4 @@ Kết quả
 Cuộn xuống → Video tiếp theo tự động phát
 Cuộn lên → Video cũ tự động dừng
 Nếu cuộn ngang giữa 2 video → cả 2 đều dừng
-Tiết kiệm pin & trải nghiệm mượt mà
+Tiết kiệm pin & trải nghiệm mượt mà# test-NguyenTheAnh-626
