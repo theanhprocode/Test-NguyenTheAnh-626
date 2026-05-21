@@ -3,31 +3,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { VideoPlayer, VideoPlayerRef } from '@/components/VideoPlayer';
 import { Navigation } from '@/components/Navigation';
-import { mockVideos, Video, Vote } from '@/data/videos';
+import { mockVideos, Video } from '@/data/videos';
 
 export default function Home() {
   const [videos, setVideos] = useState<Video[]>(mockVideos);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const videoRefs = useRef<(VideoPlayerRef | null)[]>([]);
 
-  const handleVote = (videoId: string, dir: 'up' | 'down') => {
+  const handleLike = (videoId: string) => {
     setVideos(prev =>
-      prev.map(v => {
-        if (v.id !== videoId) return v;
-        let score = v.score;
-        let next: Vote = dir;
-        if (v.userVote === dir) {
-          // Bấm lại nút đang chọn → bỏ vote
-          score += dir === 'up' ? -1 : 1;
-          next = null;
-        } else if (v.userVote === null) {
-          score += dir === 'up' ? 1 : -1;
-        } else {
-          // Đổi chiều vote (up ↔ down) → ±2
-          score += dir === 'up' ? 2 : -2;
-        }
-        return { ...v, score, userVote: next };
-      })
+      prev.map(v => (v.id === videoId ? { ...v, isLiked: !v.isLiked } : v))
     );
   };
 
@@ -67,7 +52,7 @@ export default function Home() {
                 }}
                 video={video}
                 isVisible={index === currentVideoIndex}
-                onVote={handleVote}
+                onLike={handleLike}
               />
             </div>
           ))}
