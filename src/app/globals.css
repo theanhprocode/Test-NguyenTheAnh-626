@@ -235,7 +235,7 @@ button { font-family: inherit; cursor: pointer; }
 
 .video-progress {
   position: absolute;
-  left: 12px; right: 12px; bottom: 68px;
+  left: 12px; right: 12px; bottom: 7px;
   height: 3px;
   background: rgba(255,255,255,0.25);
   border-radius: 4px;
@@ -249,7 +249,7 @@ button { font-family: inherit; cursor: pointer; }
 
 .video-info {
   position: absolute;
-  left: 12px; right: 12px; bottom: 12px;
+  left: 12px; right: 12px; bottom: 20px;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }

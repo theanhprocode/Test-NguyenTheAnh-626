@@ -84,14 +84,12 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
               </div>
             </div>
           )}
-
-          <div className="video-progress">
-            <div className="video-progress-fill" style={{ width: `${progress}%` }} />
-          </div>
-
           <div className="video-info">
             <h3 className="video-info-author">{video.authorName}</h3>
             <p className="video-info-desc">{video.description}</p>
+          </div>
+          <div className="video-progress">
+            <div className="video-progress-fill" style={{ width: `${progress}%` }} />
           </div>
         </div>
 
