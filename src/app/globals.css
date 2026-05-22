@@ -235,7 +235,7 @@ button { font-family: inherit; cursor: pointer; }
 
 .video-progress {
   position: absolute;
-  left: 12px; right: 12px; bottom: 7px;
+  left: 12px; right: 12px; bottom: 8px;
   height: 3px;
   background: rgba(255,255,255,0.25);
   border-radius: 4px;
